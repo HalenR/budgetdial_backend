@@ -196,7 +196,7 @@ def create_link_token():
             country_codes=[CountryCode("US")],
             language="en"
         )
-        response = client.link_token_create(request_data)
+        response = plaid_client.link_token_create(request_data)
         return jsonify(response.to_dict())
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -216,9 +216,9 @@ def exchange_public_token():
         return jsonify({"error": "Invalid credentials"}), 401
 
     try:
-        response = client.item_public_token_exchange(
-            ItemPublicTokenExchangeRequest(public_token=public_token)
-        )
+        response = plaid_client.item_public_token_exchange(
+    ItemPublicTokenExchangeRequest(public_token=public_token)
+)
     except Exception as e:
         return jsonify({"error": "Failed to exchange public token", "details": str(e)}), 500
 
@@ -274,7 +274,7 @@ def budget_check_token():
             start_date=start_date,
             end_date=end_date,
         )
-        res = client.transactions_get(req)
+        res = plaid_client.transactions_get(req)
         transactions = res.to_dict().get("transactions", [])
 
         total_spent = sum(txn.get("amount", 0) for txn in transactions)
@@ -306,7 +306,7 @@ def budget_check():
         start_date=start_date,
         end_date=end_date,
     )
-    res = client.transactions_get(req)
+    res = plaid_client.transactions_get(req)
     transactions = res.to_dict()["transactions"]
     total_spent = sum(txn["amount"] for txn in transactions)
     
