@@ -13,10 +13,10 @@ from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchan
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid import Configuration, ApiClient
 from datetime import datetime, timedelta
+import os
 
 
 app = Flask(__name__)
-app.secret_key = "replace-with-your-secret-key"
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -54,8 +54,8 @@ def unauthorized():
     return jsonify({"error": "Unauthorized"}), 401
 
 # Plaid setup (your keys)
-PLAID_CLIENT_ID = "6890ae85378a2e00257a56ba"
-PLAID_SECRET = "3d1780e83565c77b19fef45a28e196"
+PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
+PLAID_SECRET = os.environ.get("PLAID_SECRET")
 configuration = Configuration(
     host="https://sandbox.plaid.com",
     api_key={
