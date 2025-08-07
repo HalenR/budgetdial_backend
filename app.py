@@ -23,6 +23,7 @@ from plaid.api import plaid_api
 from datetime import datetime, timedelta
 import os
 from flask_migrate import Migrate
+from flask_migrate import upgrade
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -32,6 +33,11 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///local.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 280  # recycle connections before timeout
+app.config['SQLALCHEMY_POOL_SIZE'] = 10      # number of connections in pool
+app.config['SQLALCHEMY_MAX_OVERFLOW'] = 20   # max overflow connections
+
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -362,7 +368,6 @@ def set_budget_token():
 
 if __name__ == "__main__":
     # Only create tables locally, not in production (where you run migrations)
-    if os.environ.get("FLASK_ENV") == "development":
-        with app.app_context():
-            db.create_all()
+    with app.app_context():
+        upgrade()  # This will apply any pending migrations automatically
     app.run(host="0.0.0.0", port=5000)
