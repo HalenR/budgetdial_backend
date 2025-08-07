@@ -11,7 +11,7 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid import configuration, apiClient
+from plaid import configuration, api_client
 from datetime import datetime, timedelta
 import os
 from flask_migrate import Migrate
@@ -69,7 +69,7 @@ configuration = configuration(
         "secret": PLAID_SECRET,
     }
 )
-api_client = apiClient(configuration)
+api_client = api_client(configuration)
 client = plaid_api.PlaidApi(api_client)
 
 @app.route("/api/get_access_token", methods=["GET"])
