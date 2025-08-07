@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# ---- Plaid SDK (v9.0.0) ----
 from plaid.api import plaid_api
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
@@ -11,10 +12,20 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid.configuration import Configuration
-from plaid.api_client import ApiClient
-from plaid.api import plaid_api
-from plaid.api_client import ApiClient
+from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
+from plaid.model.transactions_get_request import TransactionsGetRequest
+from plaid.model.accounts_get_request import AccountsGetRequest
+
+from plaid import Configuration, ApiClient
+from plaid import Environment
+
+# ---- Other ----
+from datetime import datetime, timedelta
+import os
+from flask_migrate import Migrate
+from dotenv import load_dotenv
+
+
 
 from datetime import datetime, timedelta
 import os
