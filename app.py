@@ -16,8 +16,7 @@ from plaid.model.transactions_get_request_options import TransactionsGetRequestO
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.accounts_get_request import AccountsGetRequest
 
-from plaid import Configuration, ApiClient
-from plaid import Environment
+from plaid import Client, Environment
 
 # ---- Other ----
 from datetime import datetime, timedelta
@@ -51,16 +50,14 @@ login_manager.login_view = 'login'  # Redirect to login if unauthorized
 PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
 PLAID_SECRET = os.environ.get("PLAID_SECRET")
 
-configuration = Configuration(
-    host="https://sandbox.plaid.com",
-    api_key={
-        'clientId': os.getenv('PLAID_CLIENT_ID'),
-        'secret': os.getenv('PLAID_SECRET'),
-    }
+from plaid import Client, Environment
+
+client = Client(
+    client_id=os.getenv('PLAID_CLIENT_ID'),
+    secret=os.getenv('PLAID_SECRET'),
+    environment=Environment.Sandbox,
 )
 
-api_client = ApiClient(configuration)
-client = plaid_api.PlaidApi(api_client)
 
 # User model for Flask-Login and SQLAlchemy
 class User(UserMixin, db.Model):
