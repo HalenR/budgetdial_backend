@@ -11,7 +11,7 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid import Configuration, ApiClient
+from plaid import configuration, apiClient
 from datetime import datetime, timedelta
 import os
 from flask_migrate import Migrate
@@ -62,14 +62,14 @@ def unauthorized():
 # Plaid setup (your keys)
 PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
 PLAID_SECRET = os.environ.get("PLAID_SECRET")
-configuration = Configuration(
+configuration = configuration(
     host="https://sandbox.plaid.com",
     api_key={
         "clientId": PLAID_CLIENT_ID,
         "secret": PLAID_SECRET,
     }
 )
-api_client = ApiClient(configuration)
+api_client = apiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
 
 @app.route("/api/get_access_token", methods=["GET"])
