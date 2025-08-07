@@ -11,7 +11,9 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid.model.configuration import Configuration
+from plaid.configuration import Configuration
+from plaid.api_client import ApiClient
+from plaid.api import plaid_api
 from plaid.api_client import ApiClient
 
 from datetime import datetime, timedelta
@@ -39,14 +41,15 @@ PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
 PLAID_SECRET = os.environ.get("PLAID_SECRET")
 
 configuration = Configuration(
-    host=Configuration.Sandbox,  # Use the constant Sandbox for sandbox environment
+    host=Configuration.Sandbox,
     api_key={
-        "clientId": PLAID_CLIENT_ID,
-        "secret": PLAID_SECRET,
+        "clientId": os.environ["PLAID_CLIENT_ID"],
+        "secret": os.environ["PLAID_SECRET"],
     }
 )
 api_client = ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
+
 
 
 # User model for Flask-Login and SQLAlchemy
