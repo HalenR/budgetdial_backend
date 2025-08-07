@@ -312,6 +312,32 @@ def set_budget():
 
     return jsonify({"message": "Budget updated", "budget": new_budget})
 
+@app.route("/api/set_budget_token", methods=["POST"])
+def set_budget_token():
+    data = request.get_json()
+    access_token = data.get("access_token")
+    new_budget = data.get("budget")
+
+    if not access_token:
+        return jsonify({"error": "Missing access token"}), 400
+    if new_budget is None:
+        return jsonify({"error": "Missing budget"}), 400
+
+    try:
+        new_budget = float(new_budget)
+    except ValueError:
+        return jsonify({"error": "Invalid budget value"}), 400
+
+    user = User.query.filter_by(access_token=access_token).first()
+    if not user:
+        return jsonify({"error": "Invalid access token"}), 403
+
+    user.budget = new_budget
+    db.session.commit()
+
+    return jsonify({"message": "Budget updated", "budget": new_budget})
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
