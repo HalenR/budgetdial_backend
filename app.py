@@ -72,7 +72,7 @@ class User(UserMixin, db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(64), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    password_hash = db.Column(db.Text, nullable=False)
     access_token = db.Column(db.String(256), nullable=True)
     device_id = db.Column(db.String(16), unique=True, nullable=True)  
     budget = db.Column(db.Float, nullable=False, default=0.0)
