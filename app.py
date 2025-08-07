@@ -102,10 +102,7 @@ def register_device():
 
 @app.route("/")
 def index():
-    if current_user.is_authenticated:
-        return render_template("index.html", user=current_user.user_id)
-    else:
-        return render_template("index.html")
+    return jsonify({"messgae": "Welcome to the backend API"})
 
 @app.route("/api/signup", methods=["POST"])
 def signup():
