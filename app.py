@@ -52,16 +52,15 @@ PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
 PLAID_SECRET = os.environ.get("PLAID_SECRET")
 
 configuration = Configuration(
-    host=Configuration.Sandbox,
+    host="https://sandbox.plaid.com",
     api_key={
-        "clientId": os.environ["PLAID_CLIENT_ID"],
-        "secret": os.environ["PLAID_SECRET"],
+        'clientId': os.getenv('PLAID_CLIENT_ID'),
+        'secret': os.getenv('PLAID_SECRET'),
     }
 )
+
 api_client = ApiClient(configuration)
 client = plaid_api.PlaidApi(api_client)
-
-
 
 # User model for Flask-Login and SQLAlchemy
 class User(UserMixin, db.Model):
