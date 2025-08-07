@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, session, redirect, url_for
+from flask import Flask, jsonify, request, render_template, session, redirect, url_for, current_app
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -11,16 +11,15 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid.api import plaid_api
-from plaid import Configuration, api_client
-from plaid.api import PlaidApi
+from plaid.model.configuration import Configuration
 from plaid.api_client import ApiClient
+
 from datetime import datetime, timedelta
 import os
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-load_dotenv()  
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -34,6 +33,21 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'  # Redirect to login if unauthorized
+
+# Plaid setup (your keys)
+PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
+PLAID_SECRET = os.environ.get("PLAID_SECRET")
+
+configuration = Configuration(
+    host=Configuration.Sandbox,  # Use the constant Sandbox for sandbox environment
+    api_key={
+        "clientId": PLAID_CLIENT_ID,
+        "secret": PLAID_SECRET,
+    }
+)
+api_client = ApiClient(configuration)
+client = plaid_api.PlaidApi(api_client)
+
 
 # User model for Flask-Login and SQLAlchemy
 class User(UserMixin, db.Model):
@@ -61,18 +75,6 @@ def load_user(user_id):
 @login_manager.unauthorized_handler
 def unauthorized():
     return jsonify({"error": "Unauthorized"}), 401
-
-# Plaid setup (your keys)
-configuration = Configuration(
-    host=Configuration.Sandbox,
-    api_key={
-        "clientId": PLAID_CLIENT_ID,
-        "secret": PLAID_SECRET,
-    }
-)
-api_client = ApiClient(configuration)
-client = PlaidApi(api_client)
-
 
 @app.route("/api/get_access_token", methods=["GET"])
 def get_access_token_by_device():
