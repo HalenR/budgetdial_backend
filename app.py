@@ -18,7 +18,7 @@ import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('postgresql://budget_dial_users_user:EdPl9PWNus4eTEMCKrXnuSmq9PEbpDYv@dpg-d2aeck3e5dus73corso0-a/budget_dial_users')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
