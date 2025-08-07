@@ -12,7 +12,7 @@ from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.api import plaid_api
-from plaid.model import Configuration
+from plaid import Configuration, api_client
 from plaid.api import PlaidApi
 from plaid.api_client import ApiClient
 from datetime import datetime, timedelta
