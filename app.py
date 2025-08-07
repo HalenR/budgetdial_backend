@@ -16,16 +16,10 @@ from plaid.model.transactions_get_request_options import TransactionsGetRequestO
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.accounts_get_request import AccountsGetRequest
 
-from plaid import Client, Environment
+from plaid import PlaidClient, Environment
+
 
 # ---- Other ----
-from datetime import datetime, timedelta
-import os
-from flask_migrate import Migrate
-from dotenv import load_dotenv
-
-
-
 from datetime import datetime, timedelta
 import os
 from flask_migrate import Migrate
@@ -50,11 +44,9 @@ login_manager.login_view = 'login'  # Redirect to login if unauthorized
 PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
 PLAID_SECRET = os.environ.get("PLAID_SECRET")
 
-from plaid import Client, Environment
-
-client = Client(
-    client_id=os.getenv('PLAID_CLIENT_ID'),
-    secret=os.getenv('PLAID_SECRET'),
+client = PlaidClient(
+    client_id=PLAID_CLIENT_ID,
+    secret=PLAID_SECRET,
     environment=Environment.Sandbox,
 )
 
