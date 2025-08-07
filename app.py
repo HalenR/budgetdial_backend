@@ -14,13 +14,19 @@ from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid import Configuration, ApiClient
 from datetime import datetime, timedelta
 import os
+from flask_migrate import Migrate
+from dotenv import load_dotenv
 
+load_dotenv()  
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///local.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -339,6 +345,8 @@ def set_budget_token():
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # Only create tables locally, not in production (where you run migrations)
+    if os.environ.get("FLASK_ENV") == "development":
+        with app.app_context():
+            db.create_all()
+    app.run(host="0.0.0.0", port=5000)
