@@ -5,7 +5,6 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # ---- Plaid SDK (v9.0.0) ----
-from plaid.api import plaid_api
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
 from plaid.model.link_token_create_request_user import LinkTokenCreateRequestUser
 from plaid.model.products import Products
@@ -15,8 +14,9 @@ from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
 from plaid.model.transactions_get_request import TransactionsGetRequest
 from plaid.model.accounts_get_request import AccountsGetRequest
-
-from plaid import PlaidClient, Environment
+from plaid.configuration import Configuration
+from plaid.api_client import ApiClient
+from plaid.api import plaid_api
 
 
 # ---- Other ----
@@ -41,14 +41,23 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'  # Redirect to login if unauthorized
 
 # Plaid setup (your keys)
-PLAID_CLIENT_ID = os.environ.get("PLAID_CLIENT_ID")
-PLAID_SECRET = os.environ.get("PLAID_SECRET")
+PLAID_CLIENT_ID = os.getenv("PLAID_CLIENT_ID")
+PLAID_SECRET = os.getenv("PLAID_SECRET")
+PLAID_ENV = os.getenv("PLAID_ENV", "sandbox").lower()
 
-client = PlaidClient(
-    client_id=PLAID_CLIENT_ID,
-    secret=PLAID_SECRET,
-    environment=Environment.Sandbox,
+PLAID_ENVIRONMENTS = {
+    "sandbox": "sandbox",
+    "development": "development",
+    "production": "production",
+}
+configuration = Configuration(
+    host=f"https://{PLAID_ENVIRONMENTS.get(PLAID_ENV, 'sandbox')}.plaid.com"
 )
+configuration.api_key['clientId'] = PLAID_CLIENT_ID
+configuration.api_key['secret'] = PLAID_SECRET
+
+api_client = ApiClient(configuration)
+plaid_client = plaid_api.PlaidApi(api_client)
 
 
 # User model for Flask-Login and SQLAlchemy
