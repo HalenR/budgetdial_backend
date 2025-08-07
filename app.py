@@ -62,12 +62,14 @@ plaid_client = plaid_api.PlaidApi(api_client)
 
 # User model for Flask-Login and SQLAlchemy
 class User(UserMixin, db.Model):
+    __tablename__ = 'users'  # Avoid reserved table name
+    
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String, unique=True, nullable=False)
+    user_id = db.Column(db.String(64), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    access_token = db.Column(db.String, nullable=True)
+    access_token = db.Column(db.String(256), nullable=True)
     device_id = db.Column(db.String(16), unique=True, nullable=True)  
-    budget = db.Column(db.Float, nullable=True, default=0)
+    budget = db.Column(db.Float, nullable=False, default=0.0)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -75,7 +77,6 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    # Required by Flask-Login
     def get_id(self):
         return self.user_id
 
