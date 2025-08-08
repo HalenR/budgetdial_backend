@@ -320,6 +320,11 @@ def budget_check():
         "within_budget": total_spent <= budget
     })
 
+@app.route("/api/ping", methods=["GET"])
+def ping():
+    return jsonify({"message": "pong"}), 200
+
+
 @app.route("/api/set_budget", methods=["POST"])
 @login_required
 def set_budget():
