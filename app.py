@@ -87,6 +87,22 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return self.user_id
 
+from flask import jsonify, request
+
+@app.route("/api/check_device", methods=["GET"])
+def check_device():
+    device_id = request.args.get("device_id")
+    if not device_id:
+        return jsonify({"error": "Missing device_id"}), 400
+
+    user = User.query.filter_by(device_id=device_id).first()
+
+    if user:
+        return jsonify({"exists": True, "user_id": user.user_id})
+    else:
+        return jsonify({"exists": False})
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(user_id=user_id).first()
