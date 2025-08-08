@@ -364,39 +364,18 @@ def set_budget():
 def set_budget_token():
     data = request.get_json()
     access_token = data.get("access_token")
-    user_id = data.get("user_id")
-    password = data.get("password")
-    new_budget = data.get("budget")
+    budget = data.get("budget")
 
-    if new_budget is None:
-        return jsonify({"error": "Missing budget"}), 400
+    print("Updating budget:", budget, "for token:", access_token)
 
-    try:
-        new_budget = float(new_budget)
-    except ValueError:
-        return jsonify({"error": "Invalid budget value"}), 400
-
-    # Try finding user by access_token first
-    user = None
-    if access_token:
-        user = User.query.filter_by(access_token=access_token).first()
-
-    # If no access token match, try user_id + password
-    if not user and user_id:
-        user = User.query.filter_by(user_id=user_id).first()
-        if not user:
-            return jsonify({"error": "User not found"}), 404
-        if password and not user.check_password(password):
-            return jsonify({"error": "Invalid password"}), 403
-
+    user = User.query.filter_by(access_token=access_token).first()
     if not user:
-        return jsonify({"error": "Invalid credentials or token"}), 403
+        return jsonify({"error": "User not found"}), 404
 
-    # Update budget
-    user.budget = new_budget
+    user.budget = budget
     db.session.commit()
 
-    return jsonify({"message": "Budget updated", "budget": new_budget})
+    return jsonify({"message": "Budget updated", "budget": user.budget})
 
 
 
