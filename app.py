@@ -267,23 +267,16 @@ from flask import current_app
 def budget_check_token():
     data = request.get_json()
     access_token = data.get("access_token")
-    app.logger.info(f"Received access_token: {access_token!r}")
 
     if not access_token:
         return jsonify({"error": "Missing access token"}), 400
 
-    access_token = access_token.strip().strip('\'"')
-    current_app.logger.info(f"Received access_token: {access_token}")
-
-    # Exact match search for user
     user = User.query.filter_by(access_token=access_token).first()
-
     if not user:
-        app.logger.warning(f"Invalid access token attempted: {access_token!r}")
         return jsonify({"error": "Invalid access token"}), 403
 
-    # Plaid API call wrapped in try/except
     try:
+        # Fetch transactions but only sum amounts, do not return transactions
         start_date = (datetime.now() - timedelta(days=30)).date()
         end_date = datetime.now().date()
 
@@ -296,14 +289,14 @@ def budget_check_token():
         transactions = res.to_dict().get("transactions", [])
 
         total_spent = sum(txn.get("amount", 0) for txn in transactions)
-        budget = user.budget if user.budget is not None else 100000  # fallback default
+        budget = user.budget if user.budget is not None else 100000
 
+        # Return only totals, not the transaction list
         return jsonify({
             "total_spent": total_spent,
             "budget": budget,
             "within_budget": total_spent <= budget
         })
-
     except Exception as e:
         current_app.logger.error(f"Plaid API error: {e}")
         return jsonify({"error": "Plaid API error or invalid access token"}), 403
