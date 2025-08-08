@@ -366,14 +366,24 @@ def set_budget_token():
     access_token = data.get("access_token")
     budget = data.get("budget")
 
-    print("Updating budget:", budget, "for token:", access_token)
+    print(f"Updating budget: {budget} for token: {access_token}")
+
+    try:
+        budget = float(budget)
+    except (TypeError, ValueError):
+        return jsonify({"error": "Invalid budget value"}), 400
 
     user = User.query.filter_by(access_token=access_token).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    user.budget = budget
-    db.session.commit()
+    try:
+        user.budget = budget
+        db.session.commit()
+        print(f"Budget updated to {user.budget} for user {user.user_id}")
+    except Exception as e:
+        print(f"DB commit failed: {e}")
+        return jsonify({"error": "Failed to update budget"}), 500
 
     return jsonify({"message": "Budget updated", "budget": user.budget})
 
