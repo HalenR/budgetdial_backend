@@ -216,13 +216,14 @@ def exchange_public_token():
         return jsonify({"error": "Invalid credentials"}), 401
 
     try:
-        response = plaid_client.item_public_token_exchange(
-    ItemPublicTokenExchangeRequest(public_token=public_token)
-)
+        result = plaid_client.item_public_token_exchange(
+            ItemPublicTokenExchangeRequest(public_token=public_token)
+        ).to_dict()
+
     except Exception as e:
         return jsonify({"error": "Failed to exchange public token", "details": str(e)}), 500
 
-    access_token = response["access_token"]
+    access_token = result["access_token"]
     user.access_token = access_token
     db.session.commit()
 
