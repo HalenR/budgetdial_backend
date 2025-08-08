@@ -291,16 +291,20 @@ def budget_check_token():
         total_spent = sum(txn.get("amount", 0) for txn in transactions)
         budget = user.budget if user.budget is not None else 100000
 
-        # Return only totals, not the transaction list
-        return jsonify({
+        response_data = {
             "total_spent": total_spent,
             "budget": budget,
             "within_budget": total_spent <= budget
-        })
+        }
+
+        import json
+        response_json = json.dumps(response_data)
+        current_app.logger.info(f"Sending budget_check_token response size: {len(response_json)} bytes")
+
+        return jsonify(response_data)
     except Exception as e:
         current_app.logger.error(f"Plaid API error: {e}")
         return jsonify({"error": "Plaid API error or invalid access token"}), 403
-
 
 @app.route("/api/budget_check", methods=["POST"])
 @login_required
