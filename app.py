@@ -268,12 +268,15 @@ def budget_check_token():
     data = request.get_json()
     access_token = data.get("access_token")
 
+    print(f"[CHECK] Token: {access_token}")
+    
     if not access_token:
         return jsonify({"error": "Missing access token"}), 400
 
     user = User.query.filter_by(access_token=access_token).first()
     if not user:
         return jsonify({"error": "Invalid access token"}), 403
+    print(f"[CHECK] Budget currently in DB: {user.budget}")
 
     try:
         # Fetch transactions but only sum amounts, do not return transactions
@@ -368,6 +371,8 @@ def set_budget_token():
 
     print(f"Updating budget: {budget} for token: {access_token}")
 
+    print(f"[SET] Token: {access_token}, New budget requested: {budget}")
+
     try:
         budget = float(budget)
     except (TypeError, ValueError):
@@ -380,7 +385,7 @@ def set_budget_token():
     try:
         user.budget = budget
         db.session.commit()
-        print(f"Budget updated to {user.budget} for user {user.user_id}")
+        print(f"[SET] Budget in DB after commit: {user.budget} for user {user.user_id}")
     except Exception as e:
         print(f"DB commit failed: {e}")
         return jsonify({"error": "Failed to update budget"}), 500
