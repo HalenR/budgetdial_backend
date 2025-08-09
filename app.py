@@ -269,7 +269,7 @@ def budget_check_token():
     access_token = data.get("access_token")
 
     print(f"[CHECK] Token: {access_token}")
-    
+
     if not access_token:
         return jsonify({"error": "Missing access token"}), 400
 
@@ -366,8 +366,11 @@ def set_budget():
 @app.route("/api/set_budget_token", methods=["POST"])
 def set_budget_token():
     data = request.get_json()
+    print(f"[DEBUG] Raw incoming JSON: {data}")  # <--- FRONTEND payload check
     access_token = data.get("access_token")
     budget = data.get("budget")
+    print(f"[SET] Received request to update budget: {budget} for token: {access_token}")
+
 
     print(f"Updating budget: {budget} for token: {access_token}")
 
@@ -376,18 +379,21 @@ def set_budget_token():
     try:
         budget = float(budget)
     except (TypeError, ValueError):
+        print(f"[ERROR] Invalid budget value received: {budget}")
         return jsonify({"error": "Invalid budget value"}), 400
 
     user = User.query.filter_by(access_token=access_token).first()
     if not user:
+        print(f"[ERROR] No user found for token: {access_token}")
         return jsonify({"error": "User not found"}), 404
 
     try:
+        old_budget = user.budget
         user.budget = budget
         db.session.commit()
-        print(f"[SET] Budget in DB after commit: {user.budget} for user {user.user_id}")
+        print(f"[DB] Budget changed from {old_budget} → {user.budget} for user {user.user_id}")
     except Exception as e:
-        print(f"DB commit failed: {e}")
+        print(f"[ERROR] DB commit failed: {e}")
         return jsonify({"error": "Failed to update budget"}), 500
 
     return jsonify({"message": "Budget updated", "budget": user.budget})
