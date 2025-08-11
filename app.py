@@ -11,9 +11,7 @@ from plaid.model.products import Products
 from plaid.model.country_code import CountryCode
 from plaid.model.item_public_token_exchange_request import ItemPublicTokenExchangeRequest
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid.model.transactions_get_request_options import TransactionsGetRequestOptions
 from plaid.model.transactions_get_request import TransactionsGetRequest
-from plaid.model.accounts_get_request import AccountsGetRequest
 from plaid.configuration import Configuration
 from plaid.api_client import ApiClient
 from plaid.api import plaid_api
